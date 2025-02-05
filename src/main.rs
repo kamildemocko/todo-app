@@ -1,4 +1,5 @@
 mod arguments;
+mod models;
 
 use arguments::{CliCommands, parse_arguments};
 
