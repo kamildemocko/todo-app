@@ -1,13 +1,13 @@
 use std::fmt::{self};
 
 pub trait DBReader {
-    fn read_all() -> Vec<DBRow>;
-    fn read_one(id: u32) -> DBRow;
+    fn read_all(&self) -> Result<Vec<DBRow>, DBError>;
+    fn read_one(&self, id: u32) -> Result<DBRow, DBError>;
 }
 
 pub trait DBWriter {
-    fn append(r: DBRow) -> Result<(), DBError>;
-    fn create(r: DBRow) -> Result<(), DBError>;
+    fn append(&self, r: DBRow) -> Result<(), DBError>;
+    fn create(&self, r: DBRow) -> Result<(), DBError>;
 }
 
 pub struct DBRow {
@@ -28,8 +28,18 @@ impl std::error::Error for DBError {}
 impl fmt::Display for DBError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DBError::ReadError(msg) => write!(f, "Read error: {}", msg),
-            DBError::WriteError(msg) => write!(f, "Write error: {}", msg),
+            DBError::ReadError(msg) => write!(f, "read error: {}", msg),
+            DBError::WriteError(msg) => write!(f, "write error: {}", msg),
         }
+    }
+}
+
+impl DBError {
+    pub fn new_read_error(msg: &str) -> DBError {
+        return DBError::ReadError(msg.to_string())
+    }
+
+    pub fn new_write_error(msg: &str) -> DBError {
+        return DBError::WriteError(msg.to_string())
     }
 }

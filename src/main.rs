@@ -1,5 +1,6 @@
 mod arguments;
 mod models;
+mod db_csv;
 
 use arguments::{CliCommands, parse_arguments};
 
