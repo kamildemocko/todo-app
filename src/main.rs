@@ -1,11 +1,12 @@
 mod arguments;
 mod models;
 mod db_csv;
+mod utils;
 
 use std::path::PathBuf;
 
 use arguments::{CliCommands, parse_arguments};
-use models::{DBReader, DBWriter};
+use models::{DBPrinter, DBReader, DBWriter};
 
 
 fn main() {
@@ -27,9 +28,7 @@ fn main() {
         CliCommands::List => {
             println!("list was called");
             let all_items = repo.read_all().expect("cannot read the database");
-            for item in all_items {
-                println!("{:?}", item);
-            }
+            repo.print_all_rows(all_items);
         },
     }
 }

@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
-use crate::models::{DBError, DBReader, DBRow, DBWriter};
+use crate::models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
+use crate::utils::unix_to_datetime;
 
 
 pub struct DBCSV {
@@ -23,8 +24,8 @@ impl DBReader for DBCSV {
         let data = reader.deserialize()
             .collect::<Result<Vec<DBRow>, csv::Error>>()
             .map_err(|e| DBError::new_read_error(&e.to_string()))?;
-
-        todo!()
+        
+        Ok(data)
     }
 
     fn read_one(&self, id: u32) -> Result<DBRow, DBError> {
@@ -39,6 +40,26 @@ impl DBWriter for DBCSV {
 
     fn create(&self, r: DBRow) -> Result<(), crate::models::DBError> {
         todo!()
+    }
+}
+
+impl DBPrinter for DBCSV {
+    fn print_header(&self) {
+        println!("{:>4}\t{:^5}\t{:20}\t{}", "ID", "State", "Created", "Task");
+        println!("{:>4}\t{:^5}\t{:20}\t{}", "--", "-----", "-------", "----");
+    }
+
+    fn print_row(&self, r: &DBRow) {
+        let done = if r.completed { "[X]" }  else { "[ ]" };
+        let dt = unix_to_datetime(r.created as u64);
+        println!("{:>4}\t{:^5}\t{:20}\t{}", r.id, done, dt.format("%Y-%m-%d %H:%M:%S"), r.task);
+    }
+
+    fn print_all_rows(&self, v: Vec<DBRow>) {
+        self.print_header();
+        for r in v {
+            self.print_row(&r);
+        }
     }
 }
 

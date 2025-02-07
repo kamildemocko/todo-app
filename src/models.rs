@@ -10,6 +10,12 @@ pub trait DBWriter {
     fn create(&self, r: DBRow) -> Result<(), DBError>;
 }
 
+pub trait DBPrinter {
+    fn print_header(&self);
+    fn print_row(&self, r: &DBRow);
+    fn print_all_rows(&self, v: Vec<DBRow>);
+}
+
 #[derive(Debug, serde::Deserialize)]
 pub struct DBRow {
     pub id: u32,
