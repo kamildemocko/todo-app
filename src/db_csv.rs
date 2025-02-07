@@ -45,6 +45,14 @@ impl DBWriter for DBCSV {
     fn create(&self, r: DBRow) -> Result<(), crate::models::DBError> {
         todo!()
     }
+    
+    fn delete(&self, id: u32) -> Result<(), DBError> {
+        todo!()
+    }
+    
+    fn update(&self, id: u32, r: DBRow) -> Result<(), DBError> {
+        todo!()
+    }
 }
 
 impl DBPrinter for DBCSV {
