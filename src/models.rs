@@ -1,13 +1,13 @@
 use std::fmt::{self};
 
 pub trait DBReader {
-    fn read_all(&self) -> Result<Vec<DBRow>, DBError>;
-    fn read_one(&self, id: u32) -> Result<DBRow, DBError>;
+    fn read_all(&mut self) -> Result<Vec<DBRow>, DBError>;
+    fn read_one(&mut self, id: u32) -> Result<DBRow, DBError>;
 }
 
 pub trait DBWriter {
-    fn append(&self, r: DBRow) -> Result<(), DBError>;
-    fn create(&self, r: DBRow) -> Result<(), DBError>;
+    fn append(&mut self, r: DBRow) -> Result<(), DBError>;
+    fn create(&mut self, r: DBRow) -> Result<(), DBError>;
 }
 
 pub trait DBPrinter {

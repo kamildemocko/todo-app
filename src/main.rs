@@ -13,7 +13,7 @@ fn main() {
     let cli = parse_arguments();
 
     let db_path: PathBuf = PathBuf::from("db.csv");
-    let repo = db_csv::DBCSV::new(db_path);
+    let mut repo = db_csv::DBCSV::new(db_path);
 
     match &cli.command {
         CliCommands::Add { value} => {
@@ -27,7 +27,8 @@ fn main() {
         },
         CliCommands::List => {
             println!("list was called");
-            let all_items = repo.read_all().expect("cannot read the database");
+            let all_items = repo.read_all()
+                .unwrap_or_else(|e| panic!("cannot read the database: {}", e));
             repo.print_all_rows(all_items);
         },
     }
