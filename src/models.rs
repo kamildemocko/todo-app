@@ -10,6 +10,7 @@ pub trait DBWriter {
     fn create(&self, r: DBRow) -> Result<(), DBError>;
 }
 
+#[derive(Debug, serde::Deserialize)]
 pub struct DBRow {
     pub id: u32,
     pub created: i64,

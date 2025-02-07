@@ -2,10 +2,17 @@ mod arguments;
 mod models;
 mod db_csv;
 
+use std::path::PathBuf;
+
 use arguments::{CliCommands, parse_arguments};
+use models::{DBReader, DBWriter};
+
 
 fn main() {
     let cli = parse_arguments();
+
+    let db_path: PathBuf = PathBuf::from("db.csv");
+    let repo = db_csv::DBCSV::new(db_path);
 
     match &cli.command {
         CliCommands::Add { value} => {
@@ -19,6 +26,10 @@ fn main() {
         },
         CliCommands::List => {
             println!("list was called");
+            let all_items = repo.read_all().expect("cannot read the database");
+            for item in all_items {
+                println!("{:?}", item);
+            }
         },
     }
 }
