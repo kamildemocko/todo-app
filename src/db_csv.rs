@@ -53,13 +53,6 @@ impl DBPrinter for DBCSV {
         let dt = unix_to_datetime(r.created as u64);
         println!("{:>4}\t{:^5}\t{:20}\t{}", r.id, done, dt.format("%Y-%m-%d %H:%M:%S"), r.task);
     }
-
-    fn print_all_rows(&self, v: Vec<DBRow>) {
-        self.print_header();
-        for r in v {
-            self.print_row(&r);
-        }
-    }
 }
 
 impl DBCSV {

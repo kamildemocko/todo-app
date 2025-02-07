@@ -13,7 +13,13 @@ pub trait DBWriter {
 pub trait DBPrinter {
     fn print_header(&self);
     fn print_row(&self, r: &DBRow);
-    fn print_all_rows(&self, v: Vec<DBRow>);
+
+    fn print_all_rows(&self, v: Vec<DBRow>) {
+        self.print_header();
+        for r in v {
+            self.print_row(&r);
+        }
+    }
 }
 
 #[derive(Debug, serde::Deserialize)]
