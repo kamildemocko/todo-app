@@ -24,7 +24,7 @@ pub trait DBPrinter {
     }
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct DBRow {
     pub id: u32,
     pub created: i64,

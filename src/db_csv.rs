@@ -39,7 +39,11 @@ impl DBReader for DBCSV {
 
 impl DBWriter for DBCSV {
     fn append(&self, r: DBRow) -> Result<(), crate::models::DBError> {
-        todo!()
+        let mut writer = self.get_writer()?;
+        writer.serialize(r)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+        Ok(())
     }
 
     fn create(&self, r: DBRow) -> Result<(), crate::models::DBError> {
@@ -88,5 +92,17 @@ impl DBCSV {
             .map_err(|e| DBError::new_read_error(&e.to_string()))?;
 
         return Ok(reader)
+    }
+
+    fn get_writer(&self) -> Result<csv::Writer<File>, DBError> {
+        // todo: CREATE new DB
+
+        let writer = csv::WriterBuilder::new()
+            .has_headers(false)
+            .delimiter(';' as u8)
+            .from_path(&self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+        return Ok(writer)
     }
 }
