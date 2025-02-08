@@ -16,10 +16,12 @@ impl DBReader for DBCSV {
     fn read_all(&self) -> Result<Vec<DBRow>, DBError> {
         let mut reader = self.get_reader()?;
     
-        let data = reader.deserialize()
+        let mut data = reader.deserialize()
             .collect::<Result<Vec<DBRow>, csv::Error>>()
             .map_err(|e| DBError::new_read_error(&e.to_string()))?;
-        
+
+        data.sort();
+
         Ok(data)
     }
 
@@ -55,7 +57,7 @@ impl DBReader for DBCSV {
 }
 
 impl DBWriter for DBCSV {
-    fn append(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
+    fn add(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
         let mut writer = match self.get_writer(true) {
             Ok(r) => r,
             Err(DBError::EmptyDB) => {
@@ -68,6 +70,9 @@ impl DBWriter for DBCSV {
         writer.serialize(r)
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
 
+        writer.flush()
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
         Ok(())
     }
 
@@ -77,24 +82,62 @@ impl DBWriter for DBCSV {
         
         file.write("id;updatedate;task;completed\n".as_bytes())
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+        file.flush()
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
         
         Ok(())
     }
     
     fn delete(&self, id: u32) -> Result<(), DBError> {
-        todo!()
+        // get reader and writer to the temp file
+        let mut reader = self.get_reader()?;
+        let (mut temp_writer, temp_path) = self.get_temp_writer()?;
+
+        // work
+        let mut removed  = 0;
+        for result in reader.deserialize() {
+            let record: DBRow = result
+                .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+            if record.id != id {
+                temp_writer.serialize(record)
+                    .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+            } else {
+                removed += 1;
+            }
+        }
+
+        temp_writer.flush()
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        
+        // rename temp
+        fs::remove_file(&self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        fs::rename(temp_path, &self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+        if removed == 0 {
+            return Err(DBError::new_idnotfound_error())
+        }
+
+        Ok(())
     }
     
-    fn update(&self, id: u32, r: DBRow) -> Result<(), DBError> {
-        todo!()
-    }
-    
-    fn mark_complete(&self, id: u32) -> Result<(), DBError> {
-        todo!()
-    }
-    
-    fn mark_incomplete(&self, id: u32) -> Result<(), DBError> {
-        todo!()
+    fn mark_completion(&self, id: u32, complete: bool) -> Result<(), DBError> {
+        match self.read_one(id)? {
+            Some(mut v) => {
+                v.completed = true;
+
+                let mut writer = self.get_writer(false)?;
+
+                todo!()
+            }
+            None => {
+                println!("Row with ID {} was not found", id);
+                return Ok(())
+            }
+        };
     }
 }
 
@@ -147,6 +190,18 @@ impl DBCSV {
             .from_writer(file);
 
         return Ok(writer)
+    }
+
+    fn get_temp_writer(&self) -> Result<(csv::Writer<File>, PathBuf), DBError> {
+        let temp_path = self.path.with_extension("tmp");
+
+        let writer = csv::WriterBuilder::new()
+            .has_headers(true)
+            .delimiter(';' as u8)
+            .from_path(&temp_path)
+            .map_err(|_| DBError::new_emptydb_error())?;
+
+        Ok((writer, temp_path))
     }
 
 }

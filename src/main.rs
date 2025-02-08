@@ -29,18 +29,31 @@ fn main() {
                 completed: false,
                 task: value.to_string(),
             };
-            repo.append(&r).unwrap();
+            repo.add(&r).unwrap();
             repo.print_one_row(&r);
         },
+
         CliCommands::Delete { id} => {
-            println!("value del is {}", id);
+            match repo.delete(*id) {
+                Ok(_) => println!("\nRow with ID {} deleted.", id),
+                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(e) => panic!("{}", e),
+            }
         },
+
         CliCommands::Complete { id} => {
             println!("value del is {}", id);
         },
+
         CliCommands::List => {
             match repo.read_all() {
-                Ok(rows) => repo.print_all_rows(rows),
+                Ok(rows) => {
+                    if rows.len() == 0 {
+                        println!("\nNo items stored yet.");
+                        return;
+                    }
+                    repo.print_all_rows(rows);
+                }
                 Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
                 Err(e) => panic!("{}", e),
             }
