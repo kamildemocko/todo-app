@@ -11,6 +11,8 @@ pub trait DBWriter {
     fn create_db(&self) -> Result<(), DBError>;
     fn delete(&self, id: u32) -> Result<(), DBError>;
     fn update(&self, id: u32, r: DBRow) -> Result<(), DBError>;
+    fn mark_complete(&self, id: u32) -> Result<(), DBError>;
+    fn mark_incomplete(&self, id: u32) -> Result<(), DBError>;
 }
 
 pub trait DBPrinter {
@@ -33,7 +35,7 @@ pub trait DBPrinter {
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct DBRow {
     pub id: u32,
-    pub created: i64,
+    pub updatedate: i64,
     pub task: String,
     pub completed: bool,
 }

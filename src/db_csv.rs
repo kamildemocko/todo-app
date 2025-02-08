@@ -1,5 +1,7 @@
 use std::fs::{self, File};
+use std::io::Write;
 use std::path::{Path, PathBuf};
+
 
 use crate::models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
 use crate::utils::unix_to_datetime;
@@ -37,7 +39,11 @@ impl DBReader for DBCSV {
     }
 
     fn read_last_row(&self) -> Result<Option<DBRow>, DBError> {
-        let mut reader = self.get_reader()?;
+        let mut reader = match self.get_reader() {
+            Ok(r) => r,
+            Err(DBError::EmptyDB) => return Ok(None),
+            Err(e) => return Err(e),
+        };
 
         let record = reader.deserialize()
             .last()
@@ -65,8 +71,14 @@ impl DBWriter for DBCSV {
         Ok(())
     }
 
-    fn create_db(&self) -> Result<(), crate::models::DBError> {
-        todo!()
+    fn create_db(&self) -> Result<(), DBError> {
+        let mut file = File::create(&self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        
+        file.write("id;updatedate;task;completed\n".as_bytes())
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        
+        Ok(())
     }
     
     fn delete(&self, id: u32) -> Result<(), DBError> {
@@ -76,17 +88,26 @@ impl DBWriter for DBCSV {
     fn update(&self, id: u32, r: DBRow) -> Result<(), DBError> {
         todo!()
     }
+    
+    fn mark_complete(&self, id: u32) -> Result<(), DBError> {
+        todo!()
+    }
+    
+    fn mark_incomplete(&self, id: u32) -> Result<(), DBError> {
+        todo!()
+    }
 }
 
 impl DBPrinter for DBCSV {
     fn print_header(&self) {
-        println!("{:>4}\t{:^5}\t{:20}\t{}", "ID", "State", "Created", "Task");
-        println!("{:>4}\t{:^5}\t{:20}\t{}", "--", "-----", "-------", "----");
+        println!();
+        println!("{:>4}\t{:^5}\t{:20}\t{}", "ID", "State", "Date updated", "Task");
+        println!("{:>4}\t{:^5}\t{:20}\t{}", "--", "-----", "------------", "----");
     }
 
     fn print_row(&self, r: &DBRow) {
         let done = if r.completed { "[X]" }  else { "[ ]" };
-        let dt = unix_to_datetime(r.created);
+        let dt = unix_to_datetime(r.updatedate);
         println!("{:>4}\t{:^5}\t{:20}\t{}", r.id, done, dt.format("%Y-%m-%d %H:%M:%S"), r.task);
     }
 }

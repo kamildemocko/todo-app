@@ -13,7 +13,7 @@ fn main() {
     let cli = parse_arguments();
 
     let db_path: PathBuf = PathBuf::from("db.csv");
-    let mut repo = db_csv::DBCSV::new(db_path);
+    let repo = db_csv::DBCSV::new(db_path);
 
     match &cli.command {
         CliCommands::Add { value} => {
@@ -25,7 +25,7 @@ fn main() {
 
             let r = DBRow {
                 id: last_id + 1,
-                created: timestamp,
+                updatedate: timestamp,
                 completed: false,
                 task: value.to_string(),
             };
@@ -41,7 +41,7 @@ fn main() {
         CliCommands::List => {
             match repo.read_all() {
                 Ok(rows) => repo.print_all_rows(rows),
-                Err(DBError::EmptyDB) => println!("No items stored yet."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
                 Err(e) => panic!("{}", e),
             }
         },
