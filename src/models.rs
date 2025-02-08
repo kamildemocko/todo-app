@@ -6,8 +6,8 @@ pub trait DBReader {
 }
 
 pub trait DBWriter {
-    fn append(&self, r: DBRow) -> Result<(), DBError>;
-    fn create(&self, r: DBRow) -> Result<(), DBError>;
+    fn append(&self, r: &DBRow) -> Result<(), DBError>;
+    fn create(&self, r: &DBRow) -> Result<(), DBError>;
     fn delete(&self, id: u32) -> Result<(), DBError>;
     fn update(&self, id: u32, r: DBRow) -> Result<(), DBError>;
 }
@@ -21,6 +21,11 @@ pub trait DBPrinter {
         for r in v {
             self.print_row(&r);
         }
+    }
+
+    fn print_one_row(&self, r: &DBRow) {
+        self.print_header();
+        self.print_row(&r);
     }
 }
 

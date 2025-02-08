@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 
 use crate::models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
@@ -38,15 +38,15 @@ impl DBReader for DBCSV {
 }
 
 impl DBWriter for DBCSV {
-    fn append(&self, r: DBRow) -> Result<(), crate::models::DBError> {
-        let mut writer = self.get_writer()?;
+    fn append(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
+        let mut writer = self.get_writer(true)?;
         writer.serialize(r)
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
 
         Ok(())
     }
 
-    fn create(&self, r: DBRow) -> Result<(), crate::models::DBError> {
+    fn create(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
         todo!()
     }
     
@@ -90,18 +90,23 @@ impl DBCSV {
             .has_headers(true)
             .from_path(&self.path)
             .map_err(|e| DBError::new_read_error(&e.to_string()))?;
-
+        
         return Ok(reader)
     }
 
-    fn get_writer(&self) -> Result<csv::Writer<File>, DBError> {
+    fn get_writer(&self, append: bool) -> Result<csv::Writer<File>, DBError> {
         // todo: CREATE new DB
+
+        let file = fs::OpenOptions::new()
+            .write(true)
+            .append(append)
+            .open(&self.path)
+            .map_err(|e| DBError::new_read_error(&e.to_string()))?;
 
         let writer = csv::WriterBuilder::new()
             .has_headers(false)
             .delimiter(';' as u8)
-            .from_path(&self.path)
-            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+            .from_writer(file);
 
         return Ok(writer)
     }

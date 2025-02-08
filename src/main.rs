@@ -6,7 +6,7 @@ mod utils;
 use std::path::PathBuf;
 
 use arguments::{CliCommands, parse_arguments};
-use models::{DBPrinter, DBReader, DBWriter};
+use models::{DBPrinter, DBReader, DBRow, DBWriter};
 
 
 fn main() {
@@ -18,6 +18,14 @@ fn main() {
     match &cli.command {
         CliCommands::Add { value} => {
             println!("value add is {}", value);
+            let r = DBRow {
+                id: 3,
+                created: 1657113606,
+                completed: false,
+                task: "adding one from main.rs".to_string(),
+            };
+            repo.append(&r).unwrap();
+            repo.print_one_row(&r);
         },
         CliCommands::Delete { id} => {
             println!("value del is {}", id);
