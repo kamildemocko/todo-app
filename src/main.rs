@@ -21,7 +21,7 @@ fn main() {
                 Some(v) => v.id,
                 None => 0,
             };
-            let timestamp = chrono::Utc::now().timestamp();
+            let timestamp = chrono::Local::now().timestamp();
 
             let r = DBRow {
                 id: last_id + 1,

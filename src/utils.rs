@@ -1,6 +1,6 @@
-use chrono::{DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc};
-use std::time::{Duration, UNIX_EPOCH};
+use chrono::{Local, TimeZone, Utc};
 
-pub fn unix_to_datetime(timestamp: i64) -> chrono::DateTime<Utc> {
+pub fn unix_to_datetime(timestamp: i64) -> chrono::DateTime<Local> {
     Utc.timestamp_opt(timestamp, 0).unwrap()
+    .with_timezone(&Local)
 }
