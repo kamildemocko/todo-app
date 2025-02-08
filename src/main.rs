@@ -6,7 +6,7 @@ mod utils;
 use std::path::PathBuf;
 
 use arguments::{CliCommands, parse_arguments};
-use models::{DBPrinter, DBReader, DBRow, DBWriter};
+use models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
 
 
 fn main() {
@@ -39,10 +39,11 @@ fn main() {
             println!("value del is {}", id);
         },
         CliCommands::List => {
-            println!("list was called");
-            let all_items = repo.read_all()
-                .unwrap_or_else(|e| panic!("cannot read the database: {}", e));
-            repo.print_all_rows(all_items);
+            match repo.read_all() {
+                Ok(rows) => repo.print_all_rows(rows),
+                Err(DBError::EmptyDB) => println!("No items stored yet."),
+                Err(e) => panic!("{}", e),
+            }
         },
     }
 }

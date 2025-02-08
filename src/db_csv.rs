@@ -50,7 +50,14 @@ impl DBReader for DBCSV {
 
 impl DBWriter for DBCSV {
     fn append(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
-        let mut writer = self.get_writer(true)?;
+        let mut writer = match self.get_writer(true) {
+            Ok(r) => r,
+            Err(DBError::EmptyDB) => {
+                self.create_db()?;
+                self.get_writer(true)?
+            },
+            Err(e) => panic!("{}", e),
+        };
 
         writer.serialize(r)
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
@@ -58,7 +65,7 @@ impl DBWriter for DBCSV {
         Ok(())
     }
 
-    fn create(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
+    fn create_db(&self) -> Result<(), crate::models::DBError> {
         todo!()
     }
     
@@ -94,7 +101,7 @@ impl DBCSV {
 
     fn get_reader(&self) -> Result<csv::Reader<File>, DBError> {
         if !Path::exists(&self.path) {
-            return Err(DBError::new_read_error("db file path does not exist"));
+            return Err(DBError::new_emptydb_error());
         }
 
         let reader = csv::ReaderBuilder::new()
@@ -107,13 +114,11 @@ impl DBCSV {
     }
 
     fn get_writer(&self, append: bool) -> Result<csv::Writer<File>, DBError> {
-        // todo: CREATE new DB
-
         let file = fs::OpenOptions::new()
             .write(true)
             .append(append)
             .open(&self.path)
-            .map_err(|e| DBError::new_read_error(&e.to_string()))?;
+            .map_err(|_| DBError::new_emptydb_error())?;
 
         let writer = csv::WriterBuilder::new()
             .has_headers(false)

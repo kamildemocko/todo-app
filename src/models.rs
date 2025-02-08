@@ -8,7 +8,7 @@ pub trait DBReader {
 
 pub trait DBWriter {
     fn append(&self, r: &DBRow) -> Result<(), DBError>;
-    fn create(&self, r: &DBRow) -> Result<(), DBError>;
+    fn create_db(&self) -> Result<(), DBError>;
     fn delete(&self, id: u32) -> Result<(), DBError>;
     fn update(&self, id: u32, r: DBRow) -> Result<(), DBError>;
 }
@@ -42,6 +42,7 @@ pub struct DBRow {
 pub enum DBError {
     ReadError(String),
     WriteError(String),
+    EmptyDB,
 }
 
 impl std::error::Error for DBError {}
@@ -51,6 +52,7 @@ impl fmt::Display for DBError {
         match self {
             DBError::ReadError(msg) => write!(f, "read error: {}", msg),
             DBError::WriteError(msg) => write!(f, "write error: {}", msg),
+            DBError::EmptyDB => write!(f, "database empty"),
         }
     }
 }
@@ -62,5 +64,9 @@ impl DBError {
 
     pub fn new_write_error(msg: &str) -> DBError {
         return DBError::WriteError(msg.to_string())
+    }
+
+    pub fn new_emptydb_error() -> DBError {
+        return DBError::EmptyDB
     }
 }
