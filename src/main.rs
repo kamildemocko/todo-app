@@ -17,12 +17,17 @@ fn main() {
 
     match &cli.command {
         CliCommands::Add { value} => {
-            println!("value add is {}", value);
+            let last_id = match repo.read_last_row().unwrap() {
+                Some(v) => v.id,
+                None => 0,
+            };
+            let timestamp = chrono::Utc::now().timestamp();
+
             let r = DBRow {
-                id: 3,
-                created: 1657113606,
+                id: last_id + 1,
+                created: timestamp,
                 completed: false,
-                task: "adding one from main.rs".to_string(),
+                task: value.to_string(),
             };
             repo.append(&r).unwrap();
             repo.print_one_row(&r);

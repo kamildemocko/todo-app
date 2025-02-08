@@ -3,6 +3,7 @@ use std::fmt::{self};
 pub trait DBReader {
     fn read_all(&self) -> Result<Vec<DBRow>, DBError>;
     fn read_one(&self, id: u32) -> Result<Option<DBRow>, DBError>;
+    fn read_last_row(&self) -> Result<Option<DBRow>, DBError>;
 }
 
 pub trait DBWriter {

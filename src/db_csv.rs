@@ -35,11 +35,23 @@ impl DBReader for DBCSV {
 
         Ok(None)
     }
+
+    fn read_last_row(&self) -> Result<Option<DBRow>, DBError> {
+        let mut reader = self.get_reader()?;
+
+        let record = reader.deserialize()
+            .last()
+            .transpose()
+            .map_err(|e| DBError::new_read_error(&e.to_string()))?;
+        
+        Ok(record)
+    }
 }
 
 impl DBWriter for DBCSV {
     fn append(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
         let mut writer = self.get_writer(true)?;
+
         writer.serialize(r)
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
 
@@ -110,4 +122,5 @@ impl DBCSV {
 
         return Ok(writer)
     }
+
 }
