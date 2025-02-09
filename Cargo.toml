@@ -3,6 +3,10 @@ name = "todo-app"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "todo"
+path = "src/main.rs"
+
 [dependencies]
 chrono = "0.4.39"
 clap = { version = "4.5.28", features = ["derive"] }
