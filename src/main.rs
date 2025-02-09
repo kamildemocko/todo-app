@@ -52,7 +52,7 @@ fn main() {
             }
         },
 
-        CliCommands::Incomplete { id} => {
+        CliCommands::Uncomplete { id} => {
             match repo.mark_completion(*id, false) {
                 Ok(_) => {
                     let r = repo.read_one(*id).unwrap().unwrap();
