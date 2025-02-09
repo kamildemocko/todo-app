@@ -18,6 +18,6 @@ fn test_db_storage_path_partial() {
     let expected = if cfg!(target_os="windows") { "AppData" } else { "/Users" };
     let result = get_db_storage_path();
 
-    assert!(result.as_os_str().to_str().unwrap().contains(expected));
+    assert!(result.to_string_lossy().contains(expected));
 
 }
