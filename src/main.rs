@@ -13,7 +13,6 @@ fn main() {
     let cli = parse_arguments();
 
     let db_path: PathBuf = utils::get_db_storage_path();
-    println!("{:?}", db_path);
     let repo = db_csv::DBCSV::new(db_path);
 
     match &cli.command {
