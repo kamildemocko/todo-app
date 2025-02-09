@@ -195,16 +195,16 @@ impl DBCSV {
 
     fn db_is_empty(&self) -> bool {
         let file = match fs::OpenOptions::new()
-            .write(false)
+            .read(true)
             .open(&self.path) {
                 Ok(f) => f,
-                Err(_) => return true,
+                Err(_) => { return true },
             };
 
         let size = file.metadata()
             .unwrap()
             .len();
-        
+
         if size == 0 {
             return true;
         }
