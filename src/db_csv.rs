@@ -40,6 +40,10 @@ impl DBReader for DBCSV {
         Ok(None)
     }
 
+    fn get_next_id(&self) -> i32 {
+        todo!()
+    }
+
     fn read_last_row(&self) -> Result<Option<DBRow>, DBError> {
         let mut reader = match self.get_reader() {
             Ok(r) => r,
@@ -127,17 +131,18 @@ impl DBWriter for DBCSV {
     fn mark_completion(&self, id: u32, complete: bool) -> Result<(), DBError> {
         match self.read_one(id)? {
             Some(mut v) => {
-                v.completed = true;
+                v.completed = complete;
 
-                let mut writer = self.get_writer(false)?;
+                self.delete(id)?;
 
-                todo!()
+                self.add(&v)?;
             }
             None => {
-                println!("Row with ID {} was not found", id);
-                return Ok(())
+                return Err(DBError::new_idnotfound_error());
             }
         };
+
+        Ok(())
     }
 }
 

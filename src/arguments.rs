@@ -12,6 +12,7 @@ pub enum CliCommands {
     Add { value: String },
     Delete { id: u32},
     Complete { id: u32},
+    Incomplete { id: u32},
     List,
 }
 

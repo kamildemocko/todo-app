@@ -35,14 +35,36 @@ fn main() {
 
         CliCommands::Delete { id} => {
             match repo.delete(*id) {
-                Ok(_) => println!("\nRow with ID {} deleted.", id),
+                Ok(_) => {
+                    println!("\nRow with ID {} deleted.", id);
+                }
                 Err(DBError::IDNotFound) => println!("\nId was not found."),
                 Err(e) => panic!("{}", e),
             }
         },
 
         CliCommands::Complete { id} => {
-            println!("value del is {}", id);
+            match repo.mark_completion(*id, true) {
+                Ok(_) => {
+                    let r = repo.read_one(*id).unwrap().unwrap();
+                    repo.print_one_row(&r);
+                }
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(e) => panic!("{}", e),
+            }
+        },
+
+        CliCommands::Incomplete { id} => {
+            match repo.mark_completion(*id, false) {
+                Ok(_) => {
+                    let r = repo.read_one(*id).unwrap().unwrap();
+                    repo.print_one_row(&r);
+                }
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(e) => panic!("{}", e),
+            }
         },
 
         CliCommands::List => {
