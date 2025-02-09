@@ -1,14 +1,13 @@
 #![cfg(test)]
 
-use std::{fs, path::PathBuf};
-
+use std::{fs, path};
 use tempfile::TempDir;
 
 use crate::{db_csv::DBCSV, models::{DBReader, DBRow, DBWriter}};
 
 struct TestDB {
     _temp_dir: TempDir,
-    _path: PathBuf,
+    _path: path::PathBuf,
     db: DBCSV,
 }
 

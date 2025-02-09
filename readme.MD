@@ -16,6 +16,12 @@ A simple command-line TODO application written in Rust using Clap for argument p
 cargo install --path .
 ```
 
+## Testing
+
+```bash
+cargo test
+```
+
 ## Usage
 
 ```bash

@@ -1,15 +1,8 @@
-mod arguments;
-mod models;
-mod db_csv;
-mod utils;
-
-mod test_utils;
-mod test_db_csv;
-
 use std::path::PathBuf;
 
-use arguments::{CliCommands, parse_arguments};
-use models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
+use todo_app::arguments::{CliCommands, parse_arguments};
+use todo_app::models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
+use todo_app::{db_csv, utils};
 
 
 fn main() {
