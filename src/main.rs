@@ -4,6 +4,7 @@ mod db_csv;
 mod utils;
 
 mod test_utils;
+mod test_db_csv;
 
 use std::path::PathBuf;
 
