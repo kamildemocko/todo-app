@@ -12,7 +12,8 @@ use models::{DBError, DBPrinter, DBReader, DBRow, DBWriter};
 fn main() {
     let cli = parse_arguments();
 
-    let db_path: PathBuf = PathBuf::from("db.csv");
+    let db_path: PathBuf = utils::get_db_storage_path();
+    println!("{:?}", db_path);
     let repo = db_csv::DBCSV::new(db_path);
 
     match &cli.command {
@@ -26,7 +27,10 @@ fn main() {
                 completed: false,
                 task: value.join(" ").to_string(),
             };
-            repo.add(&r).unwrap();
+            match repo.add(&r) {
+                Ok(()) => (),
+                Err(e) => panic!("{}", e),
+            }
             repo.print_one_row(&r);
         },
 

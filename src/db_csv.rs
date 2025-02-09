@@ -67,7 +67,9 @@ impl DBReader for DBCSV {
 
 impl DBWriter for DBCSV {
     fn add(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
-        if self.db_is_empty() { self.create_db()? }
+        if self.db_is_empty() { 
+            self.create_db()?;
+        }
 
         let mut writer = match self.get_writer(true) {
             Ok(r) => r,
@@ -84,6 +86,12 @@ impl DBWriter for DBCSV {
     }
 
     fn create_db(&self) -> Result<(), DBError> {
+        fs::create_dir_all(self.path.parent().unwrap())
+            .map_err(|_| DBError::new_write_error("cannot create folder structure for DB"))?;
+
+        File::create(&self.path)
+            .map_err(|_| DBError::new_write_error("cannot create folder structure for DB"))?;
+
         let mut writer = self.get_writer(false)?;
 
         let header = vec!["id", "updatedate", "task", "completed"];
