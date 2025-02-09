@@ -3,6 +3,8 @@ mod models;
 mod db_csv;
 mod utils;
 
+mod test_utils;
+
 use std::path::PathBuf;
 
 use arguments::{CliCommands, parse_arguments};
