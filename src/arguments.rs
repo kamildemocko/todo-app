@@ -10,15 +10,24 @@ pub struct Cli {
 #[derive(Subcommand, Debug)]
 pub enum CliCommands {
     /// Adds new task
+    #[command(alias="a")]
     Add { value: String },
     /// Deletes task by ID
+    #[command(alias="d")]
     Delete { id: u32},
     /// Completes a task by ID
+    #[command(alias="c")]
     Complete { id: u32},
     /// Uncompletes a task by ID
+    #[command(alias="u")]
     Uncomplete { id: u32},
     /// Prints all tasks
+    #[command(alias="l")]
     List,
+    #[command(alias="li")]
+    ListIncomplete,
+    #[command(alias="lc")]
+    ListComplete,
 }
 
 

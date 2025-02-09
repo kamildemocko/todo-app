@@ -77,5 +77,33 @@ fn main() {
                 Err(e) => panic!("{}", e),
             }
         },
+
+        CliCommands::ListIncomplete => {
+            match repo.read_all() {
+                Ok(rows) => {
+                    if rows.len() == 0 {
+                        println!("\nNo items stored yet.");
+                        return;
+                    }
+                    repo.print_complete_filter(rows, false);
+                }
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(e) => panic!("{}", e),
+            }
+        },
+
+        CliCommands::ListComplete => {
+            match repo.read_all() {
+                Ok(rows) => {
+                    if rows.len() == 0 {
+                        println!("\nNo items stored yet.");
+                        return;
+                    }
+                    repo.print_complete_filter(rows, true);
+                }
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(e) => panic!("{}", e),
+            }
+        },
     }
 }

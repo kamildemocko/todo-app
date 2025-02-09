@@ -4,7 +4,6 @@ pub trait DBReader {
     fn read_all(&self) -> Result<Vec<DBRow>, DBError>;
     fn read_one(&self, id: u32) -> Result<Option<DBRow>, DBError>;
     fn get_next_id(&self) -> u32;
-    // fn read_last_row(&self) -> Result<Option<DBRow>, DBError>;
 }
 
 pub trait DBWriter {
@@ -28,6 +27,15 @@ pub trait DBPrinter {
     fn print_one_row(&self, r: &DBRow) {
         self.print_header();
         self.print_row(&r);
+    }
+
+    fn print_complete_filter(&self, v: Vec<DBRow>, completed: bool) {
+        self.print_header();
+        for r in v {
+            if r.completed != completed { continue }
+
+            self.print_row(&r);
+        }
     }
 }
 
