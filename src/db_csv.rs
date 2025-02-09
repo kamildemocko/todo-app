@@ -40,23 +40,29 @@ impl DBReader for DBCSV {
         Ok(None)
     }
 
-    fn get_next_id(&self) -> i32 {
-        todo!()
-    }
-
-    fn read_last_row(&self) -> Result<Option<DBRow>, DBError> {
+    fn get_next_id(&self) -> u32 {
         let mut reader = match self.get_reader() {
             Ok(r) => r,
-            Err(DBError::EmptyDB) => return Ok(None),
-            Err(e) => return Err(e),
+            Err(_) => return 1,
         };
 
-        let record = reader.deserialize()
-            .last()
-            .transpose()
-            .map_err(|e| DBError::new_read_error(&e.to_string()))?;
-        
-        Ok(record)
+        // gather all existing IDs
+        let mut existing: Vec<u32> = vec![];
+        for result in reader.deserialize() {
+            let record: DBRow = match result {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
+            existing.push(record.id);
+        }
+
+        for i in 1..1000 {
+            if !existing.contains(&i) {
+                return i;
+            }
+        }
+
+        1
     }
 }
 

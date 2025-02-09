@@ -17,14 +17,11 @@ fn main() {
 
     match &cli.command {
         CliCommands::Add { value} => {
-            let last_id = match repo.read_last_row().unwrap() {
-                Some(v) => v.id,
-                None => 0,
-            };
+            let last_id = repo.get_next_id();
             let timestamp = chrono::Local::now().timestamp();
 
             let r = DBRow {
-                id: last_id + 1,
+                id: last_id,
                 updatedate: timestamp,
                 completed: false,
                 task: value.to_string(),

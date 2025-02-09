@@ -3,8 +3,8 @@ use std::{cmp::Ordering, fmt::{self}};
 pub trait DBReader {
     fn read_all(&self) -> Result<Vec<DBRow>, DBError>;
     fn read_one(&self, id: u32) -> Result<Option<DBRow>, DBError>;
-    fn get_next_id(&self) -> i32;
-    fn read_last_row(&self) -> Result<Option<DBRow>, DBError>;
+    fn get_next_id(&self) -> u32;
+    // fn read_last_row(&self) -> Result<Option<DBRow>, DBError>;
 }
 
 pub trait DBWriter {
