@@ -68,12 +68,10 @@ impl DBReader for DBCSV {
 
 impl DBWriter for DBCSV {
     fn add(&self, r: &DBRow) -> Result<(), crate::models::DBError> {
+        if self.db_is_empty() { self.create_db()? }
+
         let mut writer = match self.get_writer(true) {
             Ok(r) => r,
-            Err(DBError::EmptyDB) => {
-                self.create_db()?;
-                self.get_writer(true)?
-            },
             Err(e) => panic!("{}", e),
         };
 
@@ -87,13 +85,13 @@ impl DBWriter for DBCSV {
     }
 
     fn create_db(&self) -> Result<(), DBError> {
-        let mut file = File::create(&self.path)
-            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
-        
-        file.write("id;updatedate;task;completed\n".as_bytes())
+        let mut writer = self.get_writer(false)?;
+
+        let header = vec!["id", "updatedate", "task", "completed"];
+        writer.write_record(&header)
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
 
-        file.flush()
+        writer.flush()
             .map_err(|e| DBError::new_write_error(&e.to_string()))?;
         
         Ok(())
@@ -176,7 +174,7 @@ impl DBCSV {
 
     fn get_reader(&self) -> Result<csv::Reader<File>, DBError> {
         if !Path::exists(&self.path) {
-            return Err(DBError::new_emptydb_error());
+            return Err(DBError::new_dbnotexist_error());
         }
 
         let reader = csv::ReaderBuilder::new()
@@ -188,12 +186,31 @@ impl DBCSV {
         return Ok(reader)
     }
 
+    fn db_is_empty(&self) -> bool {
+        let file = match fs::OpenOptions::new()
+            .write(false)
+            .open(&self.path) {
+                Ok(f) => f,
+                Err(_) => return true,
+            };
+
+        let size = file.metadata()
+            .unwrap()
+            .len();
+        
+        if size == 0 {
+            return true;
+        }
+
+        false
+    }
+
     fn get_writer(&self, append: bool) -> Result<csv::Writer<File>, DBError> {
         let file = fs::OpenOptions::new()
             .write(true)
             .append(append)
             .open(&self.path)
-            .map_err(|_| DBError::new_emptydb_error())?;
+            .map_err(|_| DBError::new_dbnotexist_error())?;
 
         let writer = csv::WriterBuilder::new()
             .has_headers(false)
@@ -210,7 +227,7 @@ impl DBCSV {
             .has_headers(true)
             .delimiter(';' as u8)
             .from_path(&temp_path)
-            .map_err(|_| DBError::new_emptydb_error())?;
+            .map_err(|_| DBError::new_dbnotexist_error())?;
 
         Ok((writer, temp_path))
     }

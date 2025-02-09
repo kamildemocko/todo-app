@@ -35,7 +35,7 @@ fn main() {
                 Ok(_) => {
                     println!("\nRow with ID {} deleted.", id);
                 }
-                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(DBError::IDNotFound) => println!("\nID was not found."),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -47,7 +47,7 @@ fn main() {
                     repo.print_one_row(&r);
                 }
                 Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
-                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(DBError::IDNotFound) => println!("\nID was not found."),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -59,7 +59,7 @@ fn main() {
                     repo.print_one_row(&r);
                 }
                 Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
-                Err(DBError::IDNotFound) => println!("\nId was not found."),
+                Err(DBError::IDNotFound) => println!("\nID was not found."),
                 Err(e) => panic!("{}", e),
             }
         },

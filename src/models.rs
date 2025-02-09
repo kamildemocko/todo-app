@@ -87,7 +87,7 @@ impl DBError {
         return DBError::WriteError(msg.to_string())
     }
 
-    pub fn new_emptydb_error() -> DBError {
+    pub fn new_dbnotexist_error() -> DBError {
         return DBError::EmptyDB
     }
 
