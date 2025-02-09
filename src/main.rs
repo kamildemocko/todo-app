@@ -24,7 +24,7 @@ fn main() {
                 id: last_id,
                 updatedate: timestamp,
                 completed: false,
-                task: value.to_string(),
+                task: value.join(" ").to_string(),
             };
             repo.add(&r).unwrap();
             repo.print_one_row(&r);

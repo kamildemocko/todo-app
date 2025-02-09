@@ -11,7 +11,10 @@ pub struct Cli {
 pub enum CliCommands {
     /// Adds new task
     #[command(alias="a")]
-    Add { value: String },
+    Add {
+        #[arg(trailing_var_arg = true)]
+        value: Vec<String>
+    },
     /// Deletes task by ID
     #[command(alias="d")]
     Delete { id: u32},
