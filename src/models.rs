@@ -22,11 +22,13 @@ pub trait DBPrinter {
         for r in v {
             self.print_row(&r);
         }
+        println!()
     }
 
     fn print_one_row(&self, r: &DBRow) {
         self.print_header();
         self.print_row(&r);
+        println!()
     }
 
     fn print_complete_filter(&self, v: Vec<DBRow>, completed: bool) {

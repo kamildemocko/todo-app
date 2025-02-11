@@ -32,9 +32,9 @@ fn main() {
         CliCommands::Delete { id} => {
             match repo.delete(*id) {
                 Ok(_) => {
-                    println!("\nRow with ID {} deleted.", id);
+                    println!("\nRow with ID {} deleted.\n", id);
                 }
-                Err(DBError::IDNotFound) => println!("\nID was not found."),
+                Err(DBError::IDNotFound) => println!("\nID was not found.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -45,8 +45,8 @@ fn main() {
                     let r = repo.read_one(*id).unwrap().unwrap();
                     repo.print_one_row(&r);
                 }
-                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
-                Err(DBError::IDNotFound) => println!("\nID was not found."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet.\n"),
+                Err(DBError::IDNotFound) => println!("\nID was not found.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -57,8 +57,8 @@ fn main() {
                     let r = repo.read_one(*id).unwrap().unwrap();
                     repo.print_one_row(&r);
                 }
-                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
-                Err(DBError::IDNotFound) => println!("\nID was not found."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet.\n"),
+                Err(DBError::IDNotFound) => println!("\nID was not found.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -67,12 +67,12 @@ fn main() {
             match repo.read_all() {
                 Ok(rows) => {
                     if rows.len() == 0 {
-                        println!("\nNo items stored yet.");
+                        println!("\nNo items stored yet.\n");
                         return;
                     }
                     repo.print_all_rows(rows);
                 }
-                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -81,12 +81,12 @@ fn main() {
             match repo.read_all() {
                 Ok(rows) => {
                     if rows.len() == 0 {
-                        println!("\nNo items stored yet.");
+                        println!("\nNo items stored yet.\n");
                         return;
                     }
                     repo.print_complete_filter(rows, false);
                 }
-                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
@@ -95,12 +95,12 @@ fn main() {
             match repo.read_all() {
                 Ok(rows) => {
                     if rows.len() == 0 {
-                        println!("\nNo items stored yet.");
+                        println!("\nNo items stored yet.\n");
                         return;
                     }
                     repo.print_complete_filter(rows, true);
                 }
-                Err(DBError::EmptyDB) => println!("\nNo items stored yet."),
+                Err(DBError::EmptyDB) => println!("\nNo items stored yet.\n"),
                 Err(e) => panic!("{}", e),
             }
         },
