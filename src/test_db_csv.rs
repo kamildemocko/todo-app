@@ -98,7 +98,7 @@ fn test_db_read_all_ok() {
         completed: false,
     };
     let r2 = DBRow{
-        id: 1,
+        id: 2,
         updatedate: 1739126602,
         task: "test2".to_string(),
         completed: true,
@@ -112,7 +112,7 @@ fn test_db_read_all_ok() {
 
     let unw = result.unwrap();
     assert!(unw.len() == 2);
-    assert!(unw[1].task == "test2".to_string());
+    assert!(unw[1].task == "test1".to_string());
 }
 
 #[test]
@@ -201,7 +201,7 @@ fn test_delete_completed_ok() {
         completed: false,
     };
     let r2 = DBRow{
-        id: 1,
+        id: 2,
         updatedate: 1739126602,
         task: "test2".to_string(),
         completed: true,
@@ -215,4 +215,31 @@ fn test_delete_completed_ok() {
 
     let unw = result.unwrap();
     assert!(unw == 1);
+}
+
+#[test]
+fn test_ordering_ok() {
+    let test_db = TestDB::new();
+
+    let r1 = DBRow{
+        id: 1,
+        updatedate: 1739126402,
+        task: "test1".to_string(),
+        completed: false,
+    };
+    let r2 = DBRow{
+        id: 2,
+        updatedate: 1739126602,
+        task: "test2".to_string(),
+        completed: true,
+    };
+
+    test_db.db.add(&r1).unwrap();
+    test_db.db.add(&r2).unwrap();
+
+    let result = test_db.db.read_all();
+    assert!(result.is_ok());
+
+    let unw = result.unwrap();
+    assert!(unw[0].id == 2)
 }
