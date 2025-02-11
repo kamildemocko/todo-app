@@ -58,7 +58,7 @@ impl PartialEq for DBRow {
 
 impl Ord for DBRow {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.id.cmp(&other.id)
+        other.updatedate.cmp(&self.updatedate)
     }
 }
 
