@@ -189,3 +189,30 @@ fn test_db_get_next_id_is_ok() {
 
     assert!(test_db.db.get_next_id() == 2);
 }
+
+#[test]
+fn test_delete_completed_ok() {
+    let test_db = TestDB::new();
+
+    let r1 = DBRow{
+        id: 1,
+        updatedate: 1739126402,
+        task: "test1".to_string(),
+        completed: false,
+    };
+    let r2 = DBRow{
+        id: 1,
+        updatedate: 1739126602,
+        task: "test2".to_string(),
+        completed: true,
+    };
+
+    test_db.db.add(&r1).unwrap();
+    test_db.db.add(&r2).unwrap();
+
+    let result = test_db.db.delete_completed();
+    assert!(result.is_ok());
+
+    let unw = result.unwrap();
+    assert!(unw == 1);
+}
