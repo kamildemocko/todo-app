@@ -1,16 +1,18 @@
 #![cfg(test)]
 
-use chrono::{Local, TimeZone};
+use chrono::{TimeZone, Utc};
 
 use crate::utils::{unix_to_datetime, get_db_storage_path};
 
 #[test]
 fn test_unix_to_datetime_conversion() {
     let timestamp = 1739120530;
-    let expected = Local.with_ymd_and_hms(2025, 02, 09, 18, 02, 10).unwrap();
     let result = unix_to_datetime(timestamp);
 
-    assert_eq!(result, expected);
+    let utc_result = result.with_timezone(&Utc);
+    let utc_expected = Utc.timestamp_opt(timestamp, 0).unwrap();
+
+    assert_eq!(utc_expected, utc_result);
 }
 
 #[test]
