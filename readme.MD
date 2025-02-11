@@ -30,7 +30,8 @@ todo-app [COMMAND] [OPTIONS]
 
 ### Commands
 - `add <TASK>` or `a` - Add a new task
-- `remove <ID>` or `r` - Remove a task
+- `delete <ID>` or `d` - Remove a task
+- `deleteCompleted` or `dc` - Remove all completed task
 - `list` or `l` - Show all tasks
 - `listComplete` or `lc` - Show all tasks
 - `listIncomplete` or `li` - Show all tasks
