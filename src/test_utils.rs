@@ -17,7 +17,13 @@ fn test_unix_to_datetime_conversion() {
 
 #[test]
 fn test_db_storage_path_partial() {
-    let expected = if cfg!(target_os="windows") { "AppData" } else { "/Users" };
+    let expected = if cfg!(target_os="windows") { 
+        "AppData"
+    } else if cfg!(target_os="macos") {
+        "/Users"
+    } else {
+        "/home"
+    };
     let result = get_db_storage_path();
 
     assert!(result.to_string_lossy().contains(expected));
