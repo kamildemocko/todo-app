@@ -155,6 +155,36 @@ impl DBWriter for DBCSV {
 
         Ok(())
     }
+    
+    fn delete_completed(&self) -> Result<u32, DBError> {
+        let mut reader = self.get_reader()?;
+        let (mut temp_writer, temp_path) = self.get_temp_writer()?;
+
+        // work
+        let mut removed  = 0;
+        for result in reader.deserialize() {
+            let record: DBRow = result
+                .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+            if record.completed == false {
+                temp_writer.serialize(record)
+                    .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+            } else {
+                removed += 1;
+            }
+        }
+
+        temp_writer.flush()
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        
+        // rename temp
+        fs::remove_file(&self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+        fs::rename(temp_path, &self.path)
+            .map_err(|e| DBError::new_write_error(&e.to_string()))?;
+
+        Ok(removed)
+    }
 }
 
 impl DBPrinter for DBCSV {

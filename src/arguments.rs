@@ -18,6 +18,8 @@ pub enum CliCommands {
     /// Deletes task by ID
     #[command(alias="d")]
     Delete { id: u32},
+    #[command(alias="dc")]
+    DeleteCompleted,
     /// Completes a task by ID
     #[command(alias="c")]
     Complete { id: u32},
