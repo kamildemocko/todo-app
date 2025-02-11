@@ -39,6 +39,16 @@ fn main() {
             }
         },
 
+        CliCommands::DeleteCompleted => {
+            match repo.delete_completed() {
+                Ok(c) => {
+                    println!("\n{} rows deleted.\n", c);
+                }
+                Err(DBError::IDNotFound) => println!("\nID was not found.\n"),
+                Err(e) => panic!("{}", e),
+            }
+        },
+
         CliCommands::Complete { id} => {
             match repo.mark_completion(*id, true) {
                 Ok(_) => {

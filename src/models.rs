@@ -10,6 +10,7 @@ pub trait DBWriter {
     fn add(&self, r: &DBRow) -> Result<(), DBError>;
     fn create_db(&self) -> Result<(), DBError>;
     fn delete(&self, id: u32) -> Result<(), DBError>;
+    fn delete_completed(&self) -> Result<u32, DBError>;
     fn mark_completion(&self, id: u32, complete: bool) -> Result<(), DBError>;
 }
 
